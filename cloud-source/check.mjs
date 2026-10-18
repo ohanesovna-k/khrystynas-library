@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {empty,newBook,selectBooks,duplicate,reorder,validateBackup,mergeBackup} from './public/library/core.js';
+let s=empty();s.collections=[{id:'autumn',name:'Autumn reads'}];s.customFields=[{id:'f',label:'Gift occasion',type:'text',choices:[]}];const a=newBook({title:'Café Україна',authors:['Jane Doe'],notes:'A very long note '+ 'x'.repeat(15000)+' needle at the end',why:'Curiosity',genres:['fiction'],collections:['autumn'],recommendations:[{source:'Anna',date:'',quote:'Read this',context:'Dinner'},{source:'Олена',date:'',quote:'Чудова книга',context:'Київ'}],custom:{f:'Birthday'}});const b=newBook({title:'Another book',status:'finished',priority:'high'});s.books=[a,b];s.order=[a.id,b.id];s.collectionOrders={autumn:[a.id]};
+for(const q of ['cafe','Україна','jane','anna','Олена','needle at the end','Birthday','gift occasion','autumn reads'])assert.equal(selectBooks(s,{q}).length,1,q);
+assert.equal(selectBooks(s,{filters:{genres:['fiction'],priority:['medium'],recommender:['Anna','Nobody']}}).length,1);
+assert.equal(selectBooks(s,{filters:{genres:['fiction'],priority:['high']}}).length,0);
+assert.equal(selectBooks(s,{filters:{yearFrom:'2000'}}).length,0);
+assert.equal(selectBooks(s,{}).filter(b=>b.status==='tbr').length,1);
+assert.equal(a.recommendations.length,2);assert(duplicate(a,{...a,id:'x'}));
+reorder(s,'',b.id,a.id);assert.deepEqual(s.order,[b.id,a.id]);reorder(s,'autumn',a.id,a.id);assert.deepEqual(s.collectionOrders.autumn,[a.id]);
+const restored=validateBackup(JSON.parse(JSON.stringify(s)));assert.deepEqual(restored,s);
+assert.throws(()=>validateBackup({...s,books:[{title:'Broken'}]}));assert.throws(()=>validateBackup({...s,order:['missing']}));assert.throws(()=>validateBackup({...s,books:[{...a,collections:['missing']},b]}));
+const merged=mergeBackup(s,restored);assert.equal(merged.books.length,4);assert.equal(merged.books[0].notes,a.notes);assert.equal(merged.books[2].recommendations.length,2);assert.equal(merged.collections.length,1);validateBackup(merged);
+console.log('Passed: Unicode and long-note search, custom-field labels/values, combined filters, TBR eligibility, multiple recommendations, duplicates, global/collection order, JSON round-trip, malformed import rejection, and non-overwriting merge.');
