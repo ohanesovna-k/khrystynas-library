@@ -16,3 +16,4 @@ export const sessions = sqliteTable('sessions', {
 export const authLimits = sqliteTable('auth_limits', {
  key: text('key').primaryKey(), window: integer('window').notNull(), attempts: integer('attempts').notNull()
 });
+export const deletions = sqliteTable('deletions', { userId: text('user_id').primaryKey(), createdAt: integer('created_at').notNull() });

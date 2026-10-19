@@ -1,0 +1,10 @@
+import fs from 'node:fs';
+import path from 'node:path';
+const destination=path.resolve(process.argv[2]||'pages-dist');
+fs.mkdirSync(destination,{recursive:true});
+for(const file of ['app.js','core.js','style.css','api-client.js','login.js','login.css'])fs.copyFileSync('public/library/'+file,path.join(destination,file));
+fs.copyFileSync('public/library/login.html',path.join(destination,'index.html'));
+const library=fs.readFileSync('public/library/index.html','utf8').replace('href="/" target="_top" id="logout"','href="./index.html" target="_top" id="logout"');
+fs.writeFileSync(path.join(destination,'library.html'),library);
+fs.writeFileSync(path.join(destination,'.nojekyll'),'');
+console.log('GitHub Pages client exported to '+destination);

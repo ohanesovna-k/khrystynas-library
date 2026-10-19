@@ -15,6 +15,13 @@
       "when": 1792309391716,
       "tag": "0001_clumsy_zzzax",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1792311740699,
+      "tag": "0002_loud_umar",
+      "breakpoints": true
     }
   ]
 }
